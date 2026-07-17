@@ -1,13 +1,23 @@
 # LaBeam
 
+[![Tests](https://github.com/maxikoehler/labeam/actions/workflows/test.yml/badge.svg)](https://github.com/maxikoehler/labeam/actions/workflows/test.yml)
+[![Lint](https://github.com/maxikoehler/labeam/actions/workflows/lint.yml/badge.svg)](https://github.com/maxikoehler/labeam/actions/workflows/lint.yml)
+[![Docs](https://github.com/maxikoehler/labeam/actions/workflows/docs.yml/badge.svg)](https://github.com/maxikoehler/labeam/actions/workflows/docs.yml)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://badge.fury.io/py/labeam.svg)](https://pypi.org/project/labeam/)
+
 > Tool for converting PDF presentations to HTML for easier presenting.
 
-LaBeam* turns LaTeX Beamer PDFs into interactive HTML presentations — with a laser pointer, dark mode, table of contents, a full presenter view with notes, and real-time audience synchronisation.
+LaBeam turns LaTeX Beamer PDFs into interactive HTML presentations — with a laser pointer, dark mode, table of contents, a full presenter view with notes, and real-time audience synchronisation.
 Core utilities are:
-- ```labeam convert``` for converting a PDF presentation to a cross-plattform presentable HTML file, or
-- ```labeam host``` for hosting a PDF preentation with presenter mode.
 
-*_LaBeam stands for the initial missing **la**ser **beam** in **La**TeX **Beam**er presentations. Pun intended._
+- ```labeam convert``` for converting a PDF presentation to a cross-plattform presentable HTML file, or
+- ```labeam host``` for hosting a PDF presentation with presenter mode.
+
+> [!hint]
+>
+> LaBeam stands for the initial missing **la**ser **beam** in **La**TeX **Beam**er presentations. Pun intended.
 
 ## Quickstart
 

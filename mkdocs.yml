@@ -80,10 +80,6 @@ plugins:
         #   inventories: google
 
 extra:
-  community:
-    community_button_headline: Any questions left?
-    community_button_text: Create an issue
-    community_button_default_href: https://github.com/maxikoehler/labeam/issues
   links:
     - name: code
       value: https://github.com/maxikoehler/labeam
