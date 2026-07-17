@@ -5,6 +5,9 @@ site_author: Maximilian Koehler
 repo_url: https://github.com/maxikoehler/labeam
 edit_uri: edit/main/docs/
 
+# Build output directory for GitHub Pages
+site_dir: public
+
 # Use the year of first publication in this copyright notice. The MkDocs hook at
 # `.mkdocs/hooks/copyright.py` will convert it to a year range if applicable.
 copyright: "Copyright &copy; 2026 Maximilian Koehler"
