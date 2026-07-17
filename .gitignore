@@ -128,7 +128,7 @@ dmypy.json
 
 # Data and personal stuff
 /data/
-.github/
+.github/copilot-instructions.md
 .ideas.md
 .ideas/
 .DS_Store

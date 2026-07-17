@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate tag matches CHANGELOG
+        run: |
+          TAG_VERSION="${{ github.ref }}"
+          TAG_VERSION="${TAG_VERSION#refs/tags/v}"
+          CHANGELOG_VERSION=$(awk -F'[][]' '/^## \[/ {print $2; exit}' CHANGELOG.md)
+          if [ "$CHANGELOG_VERSION" != "$TAG_VERSION" ]; then
+            echo "ERROR: tag v$TAG_VERSION does not match CHANGELOG version $CHANGELOG_VERSION"
+            exit 1
+          fi
+
+      - name: Extract release notes
+        id: extract
+        run: |
+          awk '/^## \[/ { if (++c == 2) exit; next } c == 1' CHANGELOG.md | sed -e 's/^### /## /' -e '/./,/^$/!d' > release_notes.md
+          if [ ! -s release_notes.md ]; then
+            echo "ERROR: extracted release notes are empty"
+            exit 1
+          fi
+
+      - name: Upload release notes artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release_notes.md
+
+  package:
+    name: Build and Publish Package
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+
+      - name: Set up Python 3.10
+        run: uv python install 3.10
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG_VERSION="${{ github.ref }}"
+          TAG_VERSION="${TAG_VERSION#refs/tags/v}"
+          echo "version=$TAG_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set package version
+        run: uv version "${{ steps.version.outputs.version }}"
+
+      - name: Build package
+        run: uv build
+
+      - name: Publish to PyPI
+        run: uv publish --token "${{ secrets.PYPI_TOKEN }}"
+
+  release:
+    name: Create GitHub Release
+    needs: [validate, package]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download release notes
+        uses: actions/download-artifact@v4
+        with:
+          name: release-notes
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
