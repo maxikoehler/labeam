@@ -1,0 +1,93 @@
+# git-cliff ~ configuration file
+# https://git-cliff.org/docs/configuration
+#
+# This configuration renders a changelog that follows the
+# "Keep a Changelog" format (https://keepachangelog.com/en/1.0.0/) and is
+# driven by Conventional Commits (https://www.conventionalcommits.org).
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+"""
+body = """
+{%- macro project_url() -%}
+    https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}
+{%- endmacro -%}
+
+{%- macro pull_request_url(id) -%}
+    {{ self::project_url() }}/pull/{{ id }}
+{%- endmacro -%}
+
+{%- macro release_url() -%}
+    {%- if previous.version -%}
+        {{ self::project_url() }}/compare/{{ previous.version }}..{{ version }}
+    {%- else -%}
+        {{ self::project_url() }}/releases/tag/{{ version }}
+    {%- endif -%}
+{%- endmacro -%}
+
+{%- macro entry(text, breaking, pr_id) -%}
+    - {% if breaking -%}**BREAKING:** {% endif %}{{ text }}{% if pr_id %} ([#{{ pr_id }}]({{ self::pull_request_url(id=pr_id) }})){% endif %}.
+{%- endmacro -%}
+{{- "\n" -}}
+## [{{ version | trim_start_matches(pat="v") }}]({{ self::release_url() }}) - {{ timestamp | date(format="%Y-%m-%d") }}
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+    {% set_global seen = [] -%}
+    {% set_global lines = [] -%}
+    {%- for commit in commits | reverse %}
+        {%- set subject = commit.message | split(pat="\n") | first | upper_first | trim %}
+        {%- if subject is matching("(?i)^update dependency .+ to v.+$") %}
+            {%- set dedup_key = subject | replace_regex(from=" to v.+$", to="") %}
+            {%- if dedup_key in seen %}
+                {%- continue -%}
+            {%- endif %}
+            {%- set_global seen = seen | concat(with=dedup_key) %}
+        {%- endif %}
+        {%- set_global lines = [self::entry(text=subject, breaking=commit.breaking, pr_id=commit.github.pr_number | default(value=0))] | concat(with=lines) %}
+    {%- endfor %}
+    {%- for line in lines %}
+        {{ line }}
+    {%- endfor %}
+{% endfor %}
+"""
+trim = true
+
+[changelog.transformations]
+# Extract GitHub PR numbers from conventional commit footers
+commit_footers = [
+    { token = "Closes", pattern = "#(?P<number>\\d+)" },
+]
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+require_conventional = true
+protect_breaking_commits = false
+filter_commits = false
+commit_parsers = [
+    { message = "^[Mm]erge ", skip = true },
+    { message = "^feat(\\(.+?\\))?!:.*?((?i)remove|delete|drop)", group = "<!-- 3 -->Removed" },
+    { footer  = "(?s)^BREAKING CHANGE:.*?((?i)remove|delete|drop)", group = "<!-- 3 -->Removed" },
+    { message = "^feat(\\(.+?\\))?:.*?((?i)deprecat(ed?|ing))", group = "<!-- 2 -->Deprecated" },
+    { message = "^feat", group = "<!-- 0 -->Added" },
+    { message = "^perf", group = "<!-- 1 -->Changed" },
+    { message = "^revert", group = "<!-- 1 -->Changed" },
+    { message = "^fix(\\(.+?\\))?!?:.*?((?i)security|vulnerability|CVE)", group = "<!-- 5 -->Security" },
+    { message = "^fix\\(deps\\)", group = "<!-- 1 -->Changed" },
+    { message = "^fix", group = "<!-- 4 -->Fixed" },
+    { message = "^[a-z]+(\\(.+?\\))?(!)?:", skip = true },
+]
+
+[bump]
+initial_tag = "v0.1.0"
+breaking_always_bump_major = false
+
+[remote.github]
+owner = "maxikoehler"
+repo = "labeam"
+token = "{{ env.GITHUB_TOKEN }}"

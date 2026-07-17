@@ -1,0 +1,105 @@
+[project]
+name = "labeam"
+version = "0.1.0"
+description = "Tool for converting presentations from pdf to html for easier use."
+authors = [{ name = "Maximilian Koehler", email = "maxi.koehler@outlook.de" }]
+license = {text = "CC BY-NC-SA 4.0"}
+classifiers = [
+  "License :: Other/Proprietary License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pdf2image>=1.17.0",
+    "pillow>=12.3.0",
+    "pymupdf>=1.28.0",
+    "typer==0.26.7",
+    "websockets>=12.0",
+]
+
+[project.scripts]
+labeam = "labeam._cli:app"
+
+[project.urls]
+Repository = "https://github.com/maxikoehler/labeam"
+
+[dependency-groups]
+dev = [
+  "git-cliff==2.13.1",
+  "mypy==2.1.0",
+  "pre-commit==4.6.0",
+  "pre-commit-hooks==6.0.0",
+  "pytest==9.1.1",
+  "pytest-cov==7.1.0",
+  "ruff==0.15.18",
+]
+docs = [
+  "pymdown-extensions>=10.21.3",
+  "markdown-include>=0.8.1",
+  "mkdocs-material>=9.7.7",
+  "mkdocs-mermaid2-plugin>=1.2.3",
+  "mkdocstrings>=1.0.6",
+  "pygments==2.20.0",
+  "pymdown-extensions==10.21.3",
+  "mkdocs==1.6.1",
+  "mkdocs-htmlproofer-plugin==1.5.0",
+  "mkdocstrings[python]>=0.29"
+]
+
+[tool.ruff]
+src = ["src"]
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["ANN", "COM812", "D107", "ISC001"]
+
+[tool.ruff.lint.isort]
+force-single-line = true
+required-imports = ["from __future__ import annotations"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-type-checking]
+strict = true
+
+[tool.ruff.lint.per-file-ignores]
+".mkdocs/hooks/**" = ["INP001"]
+"src/labeam/_cli.py" = ["PLR0913", "FBT001", "FBT002", "TC003"]
+"src/labeam/_server.py" = ["FBT001", "FBT002", "T201"]
+"tests/**" = ["S101", "D101", "D102", "D103", "PLR2004", "TC003", "PLC0415"]
+
+[tool.mypy]
+ignore_missing_imports = true
+mypy_path = "src"
+namespace_packages = true
+explicit_package_bases = true
+
+[tool.pytest]
+addopts = ["--cov", "--cov-report=term-missing"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+source = ["labeam"]
+
+[tool.coverage.paths]
+source = ["labeam"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/labeam"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

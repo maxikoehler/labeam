@@ -1,0 +1,116 @@
+site_name: labeam
+site_description: Tool for converting presentations from pdf to html for easier use.
+site_author: Maximilian Koehler
+
+repo_url: https://github.com/maxikoehler/labeam
+edit_uri: edit/main/docs/
+
+# Use the year of first publication in this copyright notice. The MkDocs hook at
+# `.mkdocs/hooks/copyright.py` will convert it to a year range if applicable.
+copyright: "Copyright &copy; 2026 Maximilian Koehler"
+
+nav:
+  - General:
+    - Introduction: index.md
+    - Functionality: functionality.md
+    - Contributing: contributing.md
+  - Usage:
+    - Convert: usage/convert.md
+    - Host: usage/host.md
+  - Reference: ref.md
+
+plugins:
+  - htmlproofer:
+      enabled: !ENV [MKDOCS_HTMLPROOFER_ENABLED, True]
+      raise_error_after_finish: true
+      raise_error_excludes:
+        401:
+          - https://github.com/*
+      retry_max_times: 3
+      skip_downloads: true
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: numpy
+            heading_level: 3
+            show_source: false
+            show_root_heading: false
+            show_category_heading: false
+            show_symbol_type_heading: true
+            show_symbol_type_toc: false
+            members_order: source
+
+hooks:
+  - .mkdocs/hooks/copyright.py
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.tabs
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      media: "(prefers-color-scheme: light)"
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      media: "(prefers-color-scheme: dark)"
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to light mode
+
+plugins:
+  - search
+  # Mermaid diagrams (client-side rendering)
+  - mermaid2
+  - mkdocstrings
+        # handlers:
+        # python:
+        #   # Render Google-style docstrings
+        #   inventories: google
+
+extra:
+  community:
+    community_button_headline: Any questions left?
+    community_button_text: Create an issue
+    community_button_default_href: https://github.com/maxikoehler/labeam/issues
+  links:
+    - name: code
+      value: https://github.com/maxikoehler/labeam
+    - name: issues
+      value: https://github.com/maxikoehler/labeam/issues
+
+markdown_extensions:
+  - pymdownx.highlight:
+      guess_lang: true
+  - pymdownx.quotes:
+      callouts: true
+  - pymdownx.snippets:
+      base_path: ./docs
+      check_paths: true
+      restrict_base_path: false
+  - pymdownx.tasklist
+  - admonition
+  - markdown_include.include:
+      base_path: docs
+  - toc:
+      permalink: true
+  - codehilite
+  - attr_list
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.arithmatex:
+      # generic enables TeX delimiters like $...$ and $$...$$
+      generic: true
+  - pymdownx.magiclink
+  - pymdownx.betterem
