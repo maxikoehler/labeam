@@ -28,7 +28,7 @@ jobs:
         run: uv sync --locked --only-group docs
 
       - name: Build docs
-        run: uv run mkdocs build --strict
+        run: uv run --only-group docs mkdocs build --strict
 
       - name: Upload docs artifact
         uses: actions/upload-pages-artifact@v3
