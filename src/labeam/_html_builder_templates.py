@@ -430,8 +430,13 @@ _JS = """\
   document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowRight' || e.key === ' ')  { e.preventDefault(); nextSlide(); }
     else if (e.key === 'ArrowLeft')               { e.preventDefault(); prevSlide(); }
+    else if (e.key === 'ArrowUp')               { e.preventDefault(); nextSlide(); }
+    else if (e.key === 'ArrowDown')               { e.preventDefault(); prevSlide(); }
+    else if (e.key === 'PageUp')               { e.preventDefault(); nextSlide(); }
+    else if (e.key === 'PageDown')               { e.preventDefault(); prevSlide(); }
     else if (e.key === 'Home')                    { e.preventDefault(); showSlide(0); }
     else if (e.key === 'End')                     { e.preventDefault(); showSlide(total - 1); }
+    else if (e.key === 'b' || e.key === 'B')      { toggleLaserPointer(); }
     else if (e.key === 't' || e.key === 'T')      { toggleTOC(); }
     else if (e.key === 'd' || e.key === 'D')      { toggleTheme(); }
     else if (e.key === 'l' || e.key === 'L')      { toggleLaserPointer(); }
